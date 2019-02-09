@@ -2,13 +2,13 @@
 
 # CONFLATE
 
-_Library providing routines to merge and validate JSON, YAML, TOML files and/or structs ([godoc](https://godoc.org/github.com/miracl/conflate))_
+_Library providing routines to merge and validate JSON, YAML, TOML files and/or structs ([godoc](https://godoc.org/github.com/the4thamigo-uk/conflate))_
 
 _Typical use case: Make your application configuration files **multi-format**, **modular**, **templated**, **sparse**, **location-independent** and **validated**_
 
-[![Build Status](https://secure.travis-ci.org/miracl/conflate.png?branch=master)](https://travis-ci.org/miracl/conflate?branch=master)
-[![Coverage Status](https://coveralls.io/repos/miracl/conflate/badge.svg?branch=master&service=github)](https://coveralls.io/github/miracl/conflate?branch=master)
-[![Go Report Card](https://goreportcard.com/badge/github.com/miracl/conflate)](https://goreportcard.com/report/github.com/miracl/conflate)
+[![Build Status](https://secure.travis-ci.org/the4thamigo-uk/conflate.png?branch=master)](https://travis-ci.org/the4thamigo-uk/conflate?branch=master)
+[![Coverage Status](https://coveralls.io/repos/the4thamigo-uk/conflate/badge.svg?branch=master&service=github)](https://coveralls.io/github/the4thamigo-uk/conflate?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/the4thamigo-uk/conflate)](https://goreportcard.com/report/github.com/the4thamigo-uk/conflate)
 
 ## Description
 
@@ -27,13 +27,13 @@ Improvements, ideas and bug fixes are welcomed.
 Run the following command, which will build and install the latest binary in $GOPATH/bin
 
 ```
-go get github.com/miracl/conflate/...
+go get github.com/the4thamigo-uk/conflate/...
 ```
-Alternatively, you can install one of the pre-built release binaries from https://github.com/miracl/conflate/releases
+Alternatively, you can install one of the pre-built release binaries from https://github.com/the4thamigo-uk/conflate/releases
 
 ## Usage of Library
 
-Please refer to the [godoc](https://godoc.org/github.com/miracl/conflate) and the [example code](./example/main.go)
+Please refer to the [godoc](https://godoc.org/github.com/the4thamigo-uk/conflate) and the [example code](./example/main.go)
 
 ## Usage of CLI Tool
 
@@ -78,8 +78,8 @@ $cat ./testdata/valid_parent.json
 }
 ```
 
-...run the following command, which will merge [valid_parent.json](https://raw.githubusercontent.com/miracl/conflate/master/testdata/valid_parent.json), 
-[valid_child.json](https://raw.githubusercontent.com/miracl/conflate/master/testdata/valid_child.json), [valid_sibling.json](https://raw.githubusercontent.com/miracl/conflate/master/testdata/valid_sibling.json),  :
+...run the following command, which will merge [valid_parent.json](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_parent.json), 
+[valid_child.json](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_child.json), [valid_sibling.json](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_sibling.json),  :
 
 ```bash
 $conflate -data ./testdata/valid_parent.json -format JSON
@@ -100,7 +100,7 @@ Also, note values in a file override values in any included files, and that an i
 If you instead host a file somewhere else, then just use a URL :
 
 ```bash
-$conflate -data https://raw.githubusercontent.com/miracl/conflate/master/testdata/valid_parent.json -format JSON
+$conflate -data https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_parent.json -format JSON
 {
   "all": "parent",
   "child_only": "child",
@@ -128,7 +128,7 @@ sibling_child = "sibling"
 sibling_only = "sibling"
 ```
 
-To additionally use defaults from a JSON [schema](https://raw.githubusercontent.com/miracl/conflate/master/testdata/test.schema.json) and validate the conflated data against the schema, use `-defaults` and `-validate` respectively :
+To additionally use defaults from a JSON [schema](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/test.schema.json) and validate the conflated data against the schema, use `-defaults` and `-validate` respectively :
 
 ```bash
 $cat ./testdata/blank.yaml
