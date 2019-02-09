@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/miracl/conflate"
+	"github.com/the4thamigo-uk/conflate"
 	"path"
 	"runtime"
 )
