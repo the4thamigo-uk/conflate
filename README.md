@@ -22,6 +22,11 @@ Conflate is a library and cli-tool, that provides the following features :
 
 Improvements, ideas and bug fixes are welcomed.
 
+## Background
+
+This project is a hard fork of the original that I developed at https://github.com/miracl/conflate.
+However, I will be actively supporting and extending this project independently here.
+
 ## Getting started
 
 Run the following command, which will build and install the latest binary in $GOPATH/bin
