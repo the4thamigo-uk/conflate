@@ -67,7 +67,9 @@ Usage of conflate:
     	Display the version number
 ```
 
-To conflate the following file ... :
+### Basic Merging of Files by Inclusion
+
+To conflate the following file :
 
 ```bash
 $cat ./testdata/valid_parent.json
@@ -84,7 +86,8 @@ $cat ./testdata/valid_parent.json
 ```
 
 ...run the following command, which will merge [valid_parent.json](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_parent.json), 
-[valid_child.json](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_child.json), [valid_sibling.json](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_sibling.json),  :
+[valid_child.json](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_child.json), [valid_sibling.json](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_sibling.json),
+resulting in the file :
 
 ```bash
 $conflate -data ./testdata/valid_parent.json -format JSON
@@ -98,27 +101,16 @@ $conflate -data ./testdata/valid_parent.json -format JSON
   "sibling_only": "sibling"
 }
 ```
-Note how the `includes` are loaded remotely as relative paths.
 
-Also, note values in a file override values in any included files, and that an included file overrides values in any included file above it in the `includes` list.
+Note how the `includes`, are loaded as paths relative to the _including_ file.
 
-If you instead host a file somewhere else, then just use a URL :
+Also, note that where the same named value occurs in multiple files, the resulting value follows the following priority rules :
+- the values defined in a file, override the values that are imported from the included file(s)
+- the values defined in an _included_ file, override the values imported from any included file(s) occurring before it, in the `includes` list
 
-```bash
-$conflate -data https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_parent.json -format JSON
-{
-  "all": "parent",
-  "child_only": "child",
-  "parent_child": "parent",
-  "parent_only": "parent",
-  "parent_sibling": "parent",
-  "sibling_child": "sibling",
-  "sibling_only": "sibling"
-}
+Furthermore, included files can include other files to any depth.
 
-```
-
-The `includes` here are also loaded as relative urls and follow exactly the same merging rules.
+### Choosing an Output Format
 
 To output in a different format use the `-format` option, e.g. TOML :
 
@@ -133,27 +125,10 @@ sibling_child = "sibling"
 sibling_only = "sibling"
 ```
 
-To additionally use defaults from a JSON [schema](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/test.schema.json) and validate the conflated data against the schema, use `-defaults` and `-validate` respectively :
+### Basic Merging of Files Without Inclusion
 
-```bash
-$cat ./testdata/blank.yaml
-
-$conflate -data ./testdata/blank.yaml -schema ./testdata/test.schema.json -validate -format YAML
-Schema validation failed : The document is not valid against the schema : Invalid type. Expected: object, given: null (#)
-
-$conflate -data ./testdata/blank.yaml -schema ./testdata/test.schema.json -defaults -validate -format YAML
-all: parent
-child_only: child
-parent_child: parent
-parent_only: parent
-parent_sibling: parent
-sibling_child: sibling
-sibling_only: sibling
-```
-
-Note any defaults are applied before validation is performed, as you would expect.
-
-If you don't want to intrusively embed an `"includes"` array inside your JSON, you can instead provide multiple data files which are processed from left-to-right :
+If you don't want to intrusively embed an `"includes"` array inside your JSON, you can instead provide multiple files on the command line, which are prioritised
+from left-to-right, with the right taking highest priority :
 
 ```bash
 $conflate -data ./testdata/valid_child.json -data ./testdata/valid_sibling.json -format JSON
@@ -167,7 +142,7 @@ $conflate -data ./testdata/valid_child.json -data ./testdata/valid_sibling.json 
 }
 ```
 
-Or alternatively, you can create a top-level JSON file containing only the `includes` array. For fun, lets choose to use YAML for the top-level file, and output TOML :
+Or alternatively, you can create a top-level file containing only the `includes` array. For fun, lets choose to use YAML for the top-level file, and output TOML :
 
 ```bash
 $cat toplevel.yaml 
@@ -184,10 +159,12 @@ sibling_child = "sibling"
 sibling_only = "sibling"
 ```
 
-If you want to read a file from stdin you can do the following. Here we pipe in some TOML to override a value to demonstrate :
+### Merging Data from STDIN
+
+If you want to read a file from stdin you use `-data stdin`. For example, here we pipe in some TOML to override a single value in a JSON file :
 
 ```bash
-$echo 'all="MY OVERRIDDEN VALUE"' |  conflate -data ./testdata/valid_parent.json -data stdin  -format JSON
+$echo 'all="MY OVERRIDDEN VALUE"' |  conflate -data ./testdata/valid_parent.json -data stdin -format JSON
 {
   "all": "MY OVERRIDDEN VALUE",
   "child_only": "child",
@@ -199,7 +176,8 @@ $echo 'all="MY OVERRIDDEN VALUE"' |  conflate -data ./testdata/valid_parent.json
 }
 ```
 
-Note that in all cases `-data` sources are processed from left-to-right, with values in right files overriding values in left files, so the following doesnt work :
+Note that in all cases `-data` sources are processed from left-to-right, with values in right files overriding values in left files, so the following doesnt work, since the key `"all"`,
+is present in `./testdata/valid_parent.json`:
 
 ```bash
 $echo 'all="MY OVERRIDDEN VALUE"' |  conflate -data stdin -data ./testdata/valid_parent.json  -format JSON
@@ -213,6 +191,69 @@ $echo 'all="MY OVERRIDDEN VALUE"' |  conflate -data stdin -data ./testdata/valid
   "sibling_only": "sibling"
 }
 ```
+
+### Merging of Remote files by Inclusion
+
+If you instead host a file somewhere else, then just use a URL :
+
+```bash
+$conflate -data https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/valid_parent.json -format JSON
+{
+  "all": "parent",
+  "child_only": "child",
+  "parent_child": "parent",
+  "parent_only": "parent",
+  "parent_sibling": "parent",
+  "sibling_child": "sibling",
+  "sibling_only": "sibling"
+}
+```
+
+The `includes` here are also loaded as urls relative the the url of the _including_ file, and follow exactly the same merging rules as for local files.
+
+
+### Validation Against a JSON Schema
+
+To validate your data against a JSON [schema](https://raw.githubusercontent.com/the4thamigo-uk/conflate/master/testdata/test.schema.json),
+use `-schema` in combination with `-validate` :
+
+```bash
+$cat ./testdata/blank.yaml
+
+$conflate -data ./testdata/blank.yaml -schema ./testdata/test.schema.json -validate -format YAML
+Schema validation failed : The document is not valid against the schema : Invalid type. Expected: object, given: null (#)
+```
+
+Note that you can validate any conflated JSON, TOML or JSON files, against the JSON v4 schema, it doesnt have to be pure JSON. 
+
+Also, note that the schema, is itself, validated for correctness against the [JSON v4 meta-schema](https://github.com/the4thamigo-uk/conflate/blob/master/schema.go#L254).
+
+### Use for Simplifying Boiler Plate Validation
+
+One typical use-case for _conflate_, is to use JSON schema validation to avoid having to write lots of boiler plate GO code in order to validate a user's configuration file.
+You can perform quite extensive validation using only JSON schemas (even v4 schemas), so this can greatly simplify this kind of work.
+One neat approach is to embed your schema into your code as a `const string`, and load it using [NewSchemaData](https://godoc.org/github.com/the4thamigo-uk/conflate#NewSchemaData),
+when your app starts up, so you can validate your configuration files against a schema that is directly compiled into your binary.
+
+### Applying Default Values from a JSON Schema
+
+To apply default values defined in a JSON schema use `-schema` in combination with `-defaults`:
+
+```
+$conflate -data ./testdata/blank.yaml -schema ./testdata/test.schema.json -defaults -validate -format YAML
+all: parent
+child_only: child
+parent_child: parent
+parent_only: parent
+parent_sibling: parent
+sibling_child: sibling
+sibling_only: sibling
+```
+
+Note if you also specify `-validate`, the defaults are applied before validation is performed, as you would expect.
+
+
+### Expansion of Environment Variables
 
 You can optionally expand environment variables in the files like this :
 
