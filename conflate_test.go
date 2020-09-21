@@ -3,6 +3,7 @@ package conflate
 import (
 	gocontext "context"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"os"
 	"sync"
@@ -102,10 +103,10 @@ func TestFromFilesRemote(t *testing.T) {
 	}
 	go func() {
 		defer wg.Done()
-		server.ListenAndServe()
+		_ = server.ListenAndServe()
 	}()
 	defer func() {
-		server.Shutdown(gocontext.Background())
+		_ = server.Shutdown(gocontext.Background())
 	}()
 
 	testWaitForURL(t, "http://0.0.0.0:9999")
@@ -114,7 +115,8 @@ func TestFromFilesRemote(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, c)
 	var testData TestData
-	c.Unmarshal(&testData)
+	err = c.Unmarshal(&testData)
+	require.NoError(t, err)
 	assert.Equal(t, "child", testData.ChildOnly)
 	assert.Equal(t, "parent", testData.ParentOnly)
 	assert.Equal(t, "sibling", testData.SiblingOnly)
