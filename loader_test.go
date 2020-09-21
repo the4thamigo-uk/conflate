@@ -170,10 +170,10 @@ func testServer() func() {
 	}
 	go func() {
 		defer wg.Done()
-		server.ListenAndServe()
+		_ = server.ListenAndServe()
 	}()
 	return func() {
-		server.Shutdown(gocontext.Background())
+		_ = server.Shutdown(gocontext.Background())
 	}
 }
 func testWaitForURL(t *testing.T, url string) {
