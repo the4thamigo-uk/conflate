@@ -32,7 +32,7 @@ However, I will be actively supporting and extending this project independently 
 Run the following command, which will build and install the latest binary in $GOPATH/bin
 
 ```
-go get github.com/the4thamigo-uk/conflate/...
+go install  github.com/the4thamigo-uk/conflate/conflate@latest
 ```
 Alternatively, you can install one of the pre-built release binaries from https://github.com/the4thamigo-uk/conflate/releases
 
